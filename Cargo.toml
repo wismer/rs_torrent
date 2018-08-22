@@ -1,0 +1,7 @@
+[package]
+name = "rs_bittorrent"
+version = "0.1.0"
+authors = ["Matt Long <matthewhl@gmail.com>"]
+
+[dependencies]
+bip_bencode = "0.4.4"
