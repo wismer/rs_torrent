@@ -1,8 +1,13 @@
 use std::net::{UdpSocket, SocketAddr, ToSocketAddrs};
 extern crate bip_bencode;
+extern crate hyper;
+
 
 use std::default::Default;
 use bip_bencode::{BencodeRef, BRefAccess, BDecodeOpt};
+use std::io::{self, Write};
+use hyper::Client;
+use hyper::rt::{self, Future, Stream};
 use std::fs::{File};
 use std::io::prelude::*;
 
@@ -84,6 +89,9 @@ fn main() {
         .iter()
         .fold(0, |acc, ref file| acc + file.length);
 
+    let sha_hash = info.dict().unwrap().lookup(b"pieces").unwrap().bytes().unwrap();
+    println!("SHA HASH {:?}", sha_hash.len());
+
     let piece_count = (total_size / piece_length) + 1; // this isn't exact. there could always be a payload that is exactly n * piece_length
     let mut torrent: Torrent = Torrent {
         files: files,
@@ -91,17 +99,27 @@ fn main() {
         piece_length: piece_length,
         pieces: create_empty_pieces((total_size / piece_length) as usize, piece_count as usize)
     };
-    // let file_info = info.dict().unwrap().lookup(b"files").unwrap().list().unwrap();
 
-    // for file in file_info {
-        
-    // }
-    // for url in announce_list.list().unwrap() {
-    //     println!("{:?}", url.list().unwrap().get(0).unwrap().str());
-    // }
+    let uri = "http://httpbin.org/ip".parse().unwrap();
+    rt::run(fetch_url(uri));
+}
 
-    // let mut torrent_data = Torrent {
-        
-    // };
-    // println!("{:?}", String::from_utf8(torrent_content.dict().unwrap().lookup(b"announce-list").unwrap().list().unwrap()));
+fn fetch_url(url: hyper::Uri) -> impl Future<Item=(), Error=()> {
+    let client = Client::new();
+    
+    client
+        .get(url)
+        .and_then(|res| {
+            println!("Response: {}", res.status());
+            res.into_body().for_each(|chunk| {
+                    io::stdout()
+                        .write_all(&chunk)
+                        .map_err(|e| {
+                            panic!("example expects stdout is open, error={}", e)
+                        })
+                })
+        })
+        .map_err(|err| {
+            println!("Error: {}", err);
+        })
 }

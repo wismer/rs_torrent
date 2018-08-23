@@ -5,3 +5,4 @@ authors = ["Matt Long <matthewhl@gmail.com>"]
 
 [dependencies]
 bip_bencode = "0.4.4"
+hyper = "0.12"
