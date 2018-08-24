@@ -6,3 +6,5 @@ authors = ["Matt Long <matthewhl@gmail.com>"]
 [dependencies]
 bip_bencode = "0.4.4"
 hyper = "0.12"
+sha1 = "0.6.0"
+uuid = "0.6"
