@@ -1,1 +1,1 @@
-pub mod torrenter;
+pub mod torrent;

@@ -1,3 +1,5 @@
+pub mod torrent;
+
 use std::net::{UdpSocket, SocketAddr, ToSocketAddrs};
 use std::str;
 use std::default::Default;
@@ -15,9 +17,17 @@ use hyper::rt::{self, Future, Stream};
 use sha1::{Sha1, Digest};
 
 
+use torrent::torrent::{TorrentFile};
 // 
 // fn extract_pieces()
-
+/*
+    TODO:
+        1. move torrent file opening parts to a separate file
+        2. apply command line option for path to torrent file
+        3. expand on torrent struct
+        4. ???
+        5. Profit.
+*/ 
 fn main() {
     let mut torrent_file: File = File::open("./steven_universe.torrent").unwrap();
     let mut contents = Vec::new();
